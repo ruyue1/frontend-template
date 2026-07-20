@@ -5,7 +5,7 @@
 
 - **前端框架**: React 18.2
 - **类型系统**: TypeScript 5.3
-- **UI 组件库**: Ant Design 4.x
+- **UI 组件库**: Ant Design ^5.22.6
 - **路由管理**: React Router DOM 6.x
 - **构建工具**: RSBuild (Rspack)
 - **HTTP 客户端**: Axios 1.x
