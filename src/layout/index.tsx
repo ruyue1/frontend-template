@@ -12,6 +12,7 @@ import {
   renderIcon
 } from '@utils/workbench';
 import AppIcon from './components/AppIcon';
+import { transformBizMenuForProLayout } from '@/utils/layout';
 
 const HEADER_FOOTER_SETTING: Partial<ProSettings> = {
   headerRender: undefined, // 启用Header时渲染默认的Header，可以手动复写为自定义Header
@@ -36,27 +37,27 @@ export default () => {
 
   const [pathname, setPathname] = useState(location.pathname);
 
-  const settings = useMemo(()=> {
+  const settings = useMemo(() => {
     return {
       ...DEFAULT_LAYOUT_SETTING,
       ...HEADER_FOOTER_SETTING,
     };
   }, [])
 
-  const routes = useMemo(()=>{
+  const routes = useMemo(() => {
     return (
       {
         path: '/page',
         name: '',
         flatMenu: true, // 当前路由不在菜单中显示，直接展示子菜单
-        routes: [...BIZ_MENUS, ...SYSTEM_MENUS]
+        routes: [...transformBizMenuForProLayout(BIZ_MENUS), ...SYSTEM_MENUS]
       }
     );
   }, [])
 
   const handleMenuClick = useCallback((item: any, isMobile?: boolean) => {
     if (item?.path) {
-      if(item?.isUrl) {
+      if (item?.isUrl) {
         // 移动端只能当前页面打开跳转链接
         if (isMobile) {
           openNewPage(item.path, '_self');
@@ -68,7 +69,7 @@ export default () => {
         navigate(item.path);
       }
     }
-  },[])
+  }, [])
 
   const { authInfo } = useContext(GlobalContext);
 
@@ -76,7 +77,7 @@ export default () => {
   let userInfo: IUserInfo;
 
   try {
-    if(userInfoFromSessionStr) {
+    if (userInfoFromSessionStr) {
       userInfo = JSON.parse(userInfoFromSessionStr);
     } else {
       userInfo = ANONYMOUS_USER_INFO;
@@ -112,13 +113,13 @@ export default () => {
             className={`flex items-center gap-1.5`}
             onClick={() => { handleMenuClick(item, props.isMobile); }}
           >
-            {item?.icon ? <span>{renderIcon(item.icon)}</span> : null }
+            {item?.icon ? <span>{renderIcon(item.icon)}</span> : null}
             <span>{item.name}</span>
           </div>
         )}
         {...settings}
       >
-        <Outlet/>
+        <Outlet />
       </ProLayout>
     </ProConfigProvider>
   );
