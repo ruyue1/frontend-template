@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { sourcePathPlugin } from './scripts/sourcePathPlugin.mjs';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [sourcePathPlugin({ rootDir: __dirname }), react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
