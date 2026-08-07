@@ -1,6 +1,6 @@
 import { Suspense, useMemo } from 'react';
 import { RouteObject, useRoutes, Navigate } from 'react-router-dom';
-import { BIZ_MENUS, SYSTEM_MENUS } from '@/constants/menus';
+import { BIZ_MENUS } from '@/constants/menus';
 import { PAGE_ROUTE } from '@/constants/routes';
 import Layout from '@/layout';
 import Login from '@/pages/Login';
@@ -30,8 +30,7 @@ const routeList: RouteObject[] = [
         path: PAGE_ROUTE,
         element: <Layout />,
         children: [
-          ...transformMenuToRoute(BIZ_MENUS),
-          ...transformMenuToRoute(SYSTEM_MENUS, true),
+          ...transformMenuToRoute(BIZ_MENUS)
         ],
       },
       { path: '/login', element: <Login /> },

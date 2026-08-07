@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'; // 引入�
 import type { ProSettings } from '@ant-design/pro-components';
 import { ProLayout, ProConfigProvider } from '@ant-design/pro-components';
 import { USER_INFO_KEY } from '@/constants';
-import { BIZ_MENUS, SYSTEM_MENUS } from '@/constants/menus';
+import { BIZ_MENUS } from '@/constants/menus';
 import { LayoutTypeEnum } from '@typings/workbench';
 import type { IUserInfo } from '@/typings';
 import { GlobalContext } from '@/providers';
@@ -50,7 +50,7 @@ export default () => {
         path: '/page',
         name: '',
         flatMenu: true, // 当前路由不在菜单中显示，直接展示子菜单
-        routes: [...transformBizMenuForProLayout(BIZ_MENUS), ...SYSTEM_MENUS]
+        routes: [...transformBizMenuForProLayout(BIZ_MENUS)]
       }
     );
   }, [])

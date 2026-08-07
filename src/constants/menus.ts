@@ -13,27 +13,7 @@ export const BIZ_MENUS: Route[] = [
         key: 'DefaultPage' // 如果渲染的是特定页面，key必须存在，且与src/pages下面的page的引用地址保持一致，要让import Page from '@/pages/Page’是一个有效语句
       }
     ]
-  },
-  {
-    path: 'https://www.baidu.com',
-    name: '外部链接',
-    icon: "GithubFilled",
-    target: "_blank"
   }
 ];
 
-export const SYSTEM_MENUS: Route[] = [
-  {
-    path: 'system',
-    name: '系统管理',
-    icon: 'SettingFilled',
-    children: [
-      {
-        path: 'role',
-        name: '角色授权',
-        icon: 'UserOutlined',
-        key: 'Role'
-      }
-    ]
-  }
-];
+
