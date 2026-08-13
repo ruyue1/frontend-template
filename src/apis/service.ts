@@ -67,7 +67,7 @@ class Service {
     return this.axios.get(url, {
       params,
       ...config,
-    });
+    }) as unknown as Promise<T>;
   }
 
   post<T>(url: string, data?: DataType, config: AxiosRequestConfig = {}): Promise<{ data: T }> {
@@ -75,14 +75,14 @@ class Service {
   }
 
   put<T>(url: string, data?: DataType, config: AxiosRequestConfig = {}): Promise<T> {
-    return this.axios.put(url, data, config);
+    return this.axios.put(url, data, config) as unknown as Promise<T>;
   }
 
   delete<T>(url: string, data?: DataType, config: AxiosRequestConfig = {}): Promise<T> {
     return this.axios.delete(url, {
       data,
       ...config,
-    });
+    }) as unknown as Promise<T>;
   }
 
   all(axiosInstances: AxiosInstance[]) {
