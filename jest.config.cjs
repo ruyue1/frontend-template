@@ -11,18 +11,18 @@ module.exports = {
     '\\.(css|less|sass|scss)$': '<rootDir>/tests/__mocks__/styleMock.cjs',
     '\\.(bmp|gif|jpe?g|png|svg|webp)$': '<rootDir>/tests/__mocks__/fileMock.cjs',
   },
-  preset: 'ts-jest',
+  //preset: 'ts-jest',
   setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'],
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>/tests/**/*.test.{ts,tsx}'],
+  globals: {
+    'ts-jest': {
+      diagnostics: true,
+      isolatedModules: true,
+      tsconfig: '<rootDir>/tsconfig.test.json',
+    },
+  },
   transform: {
-    '^.+\\.(ts|tsx)$': [
-      'ts-jest',
-      {
-        diagnostics: true,
-        isolatedModules: true,
-        tsconfig: '<rootDir>/tsconfig.test.json',
-      },
-    ],
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
 };
