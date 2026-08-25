@@ -63,11 +63,8 @@ class Service {
     this.axios.interceptors.response.use(onResFulfilled, onResRejected);
   }
 
-  get<T>(url: string, params?: DataType, config: AxiosRequestConfig = {}): Promise<T> {
-    return this.axios.get(url, {
-      params,
-      ...config,
-    }) as unknown as Promise<T>;
+  get<T>(url: string, config: AxiosRequestConfig = {}): Promise<T> {
+    return this.axios.get(url, config) as unknown as Promise<T>;
   }
 
   post<T>(url: string, data?: DataType, config: AxiosRequestConfig = {}): Promise<{ data: T }> {
@@ -78,11 +75,8 @@ class Service {
     return this.axios.put(url, data, config) as unknown as Promise<T>;
   }
 
-  delete<T>(url: string, data?: DataType, config: AxiosRequestConfig = {}): Promise<T> {
-    return this.axios.delete(url, {
-      data,
-      ...config,
-    }) as unknown as Promise<T>;
+  delete<T>(url: string, config: AxiosRequestConfig = {}): Promise<T> {
+    return this.axios.delete(url, config) as unknown as Promise<T>;
   }
 
   all(axiosInstances: AxiosInstance[]) {

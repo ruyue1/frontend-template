@@ -1,0 +1,22 @@
+import type { components } from './generated/authorizationApiTypes';
+
+type Schemas = components['schemas'];
+export type AuthorizationStatus = Schemas['AuthorizationStatus'];
+export type ErrorResponse = Schemas['ErrorResponse'];
+export type PermissionResource = Schemas['PermissionResource'];
+export type ResourceList = Schemas['ResourceList'];
+export type Role = Schemas['Role'];
+export type RoleList = Schemas['RoleList'];
+export type RoleUpsertRequest = Schemas['RoleUpsertRequest'];
+export type RoleStatusRequest = Schemas['RoleStatusRequest'];
+export type RoleResourcesRequest = Schemas['RoleResourcesRequest'];
+export type RoleResources = Schemas['RoleResources'];
+export type RoleWriteResult = Schemas['RoleWriteResult'];
+export type Member = Schemas['Member'];
+export type MemberList = Schemas['MemberList'];
+export type MemberRolesRequest = Schemas['MemberRolesRequest'];
+export type EffectivePermissions = Schemas['EffectivePermissions'];
+export type RevisionRequest = Schemas['RevisionRequest'];
+export type RevisionResult = Schemas['RevisionResult'];
+export type AuditEntry = Schemas['AuditEntry'];
+export type AuditList = Schemas['AuditList'];

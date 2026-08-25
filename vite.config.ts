@@ -2,9 +2,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { sourcePathPlugin } from './scripts/sourcePathPlugin.mjs';
+import { authorizationMockPlugin } from './devtools/authorizationMock';
 
 export default defineConfig({
-  plugins: [sourcePathPlugin({ rootDir: __dirname }), react()],
+  plugins: [sourcePathPlugin({ rootDir: __dirname }), react(), authorizationMockPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

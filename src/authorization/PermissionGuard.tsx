@@ -1,0 +1,59 @@
+import { Alert, Button, Result, Spin } from "antd";
+import { PropsWithChildren } from "react";
+import { PermissionState, usePermission } from "./PermissionProvider";
+
+export function PermissionStateView({ state }: { state: PermissionState }) {
+  const { retry } = usePermission();
+  if (state === "loading")
+    return (
+      <div className="authorization-state">
+        <Spin tip="正在加载权限…" size="large" />
+      </div>
+    );
+  if (state === "not-ready")
+    return (
+      <Result
+        status="warning"
+        title="权限运行时尚未就绪"
+        subTitle="请在服务初始化完成后重试。"
+        extra={<Button onClick={retry}>重试</Button>}
+      />
+    );
+  if (state === "unauthenticated")
+    return (
+      <Result
+        status="403"
+        title="登录状态已失效"
+        subTitle="请重新登录后再访问系统权限管理。"
+      />
+    );
+  if (state === "forbidden")
+    return (
+      <Result
+        status="403"
+        title="无权限访问"
+        subTitle="当前成员没有系统权限管理资源。"
+      />
+    );
+  return (
+    <Alert
+      type="error"
+      showIcon
+      message="权限状态加载失败"
+      description="暂时无法验证您的访问权限，请稍后重试。"
+      action={<Button onClick={retry}>重试</Button>}
+    />
+  );
+}
+
+export function PermissionGuard({
+  resourceKey,
+  children,
+}: PropsWithChildren<{ resourceKey: string }>) {
+  const { state, can } = usePermission();
+  return can(resourceKey) ? (
+    <>{children}</>
+  ) : (
+    <PermissionStateView state={state} />
+  );
+}

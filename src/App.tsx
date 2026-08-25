@@ -5,6 +5,7 @@ import { StyleProvider } from '@ant-design/cssinjs';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import GlobalContextProvider from '@/providers';
 import { Routes } from '@/routes';
+import { PermissionProvider } from '@/authorization/PermissionProvider';
 /**
  * 应用入口文件
  */
@@ -14,6 +15,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <ErrorBoundary>
         <GlobalContextProvider>
+          <PermissionProvider>
           <StyleProvider layer>
             <ConfigProvider
               theme={{
@@ -26,6 +28,7 @@ const App: React.FC = () => {
               <Routes />
             </ConfigProvider>
           </StyleProvider>
+          </PermissionProvider>
         </GlobalContextProvider>
       </ErrorBoundary>
     </BrowserRouter>
