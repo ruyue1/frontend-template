@@ -1,6 +1,7 @@
 import { Alert, Button, Result, Spin } from 'antd';
 import { PropsWithChildren } from 'react';
 import { AuthState, useAuth } from './AuthProvider';
+import { usePermission } from './usePermission';
 
 function AuthStateView({ state }: { state: AuthState }) {
   const { refreshPermissions } = useAuth();
@@ -12,6 +13,7 @@ function AuthStateView({ state }: { state: AuthState }) {
 }
 
 export function RouteGuard({ resourceKey, children }: PropsWithChildren<{ resourceKey: string }>) {
-  const { state, can } = useAuth();
-  return can(resourceKey) ? <>{children}</> : <AuthStateView state={state} />;
+  const { state } = useAuth();
+  const { hasPermission } = usePermission();
+  return hasPermission(resourceKey) ? <>{children}</> : <AuthStateView state={state} />;
 }

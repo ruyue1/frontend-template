@@ -10,10 +10,7 @@ import { GlobalContext } from "@/providers";
 import { openNewPage, renderIcon } from "@utils/workbench";
 import AppIcon from "./components/AppIcon";
 import { transformBizMenuForProLayout } from "@/utils/layout";
-import {
-  AUTHORIZATION_RESOURCE_KEY,
-  useAuth,
-} from "@/authorization/AuthProvider";
+import { RESOURCES, usePermission } from "@/authorization";
 
 const HEADER_FOOTER_SETTING: Partial<ProSettings> = {
   headerRender: undefined, // 启用Header时渲染默认的Header，可以手动复写为自定义Header
@@ -43,7 +40,7 @@ export default () => {
   }, []);
 
   const { userInfo: contextUserInfo } = useContext(GlobalContext);
-  const { can } = useAuth();
+  const { hasPermission } = usePermission();
   const routes = useMemo(() => {
     return {
       path: "/page",
@@ -51,7 +48,7 @@ export default () => {
       flatMenu: true, // 当前路由不在菜单中显示，直接展示子菜单
       routes: [
         ...transformBizMenuForProLayout(BIZ_MENUS),
-        ...(can(AUTHORIZATION_RESOURCE_KEY)
+        ...(hasPermission(RESOURCES.SYSTEM.AUTHORIZATION_MANAGEMENT)
           ? [
               {
                 path: "/roles",
@@ -62,7 +59,7 @@ export default () => {
           : []),
       ],
     };
-  }, [can]);
+  }, [hasPermission]);
 
   const handleMenuClick = useCallback((item: any, isMobile?: boolean) => {
     if (item?.path) {

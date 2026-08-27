@@ -8,7 +8,7 @@ import Logout from '@/pages/Logout';
 import { transformMenuToRoute } from '@/utils/route';
 import AuthorizationManagementPage from '@/pages/System/AuthorizationManagementPage';
 import { RouteGuard } from '@/authorization/RouteGuard';
-import { AUTHORIZATION_RESOURCE_KEY } from '@/authorization/AuthProvider';
+import { RESOURCES } from '@/authorization';
 
 const generateRouter = (routes: RouteObject[]) => {
   return routes.map((item) => {
@@ -41,7 +41,7 @@ const routeList: RouteObject[] = [
           {
             index: true,
             element: (
-              <RouteGuard resourceKey={AUTHORIZATION_RESOURCE_KEY}>
+              <RouteGuard resourceKey={RESOURCES.SYSTEM.AUTHORIZATION_MANAGEMENT}>
                 <AuthorizationManagementPage />
               </RouteGuard>
             ),
