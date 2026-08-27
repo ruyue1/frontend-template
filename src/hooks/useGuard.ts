@@ -53,7 +53,7 @@ export default function useGuard({ userInfo, setAuthInfo }: useGuardProps) {
     try {
       const userInfoFromSession = userInfoFromSessionStr ? JSON.parse(userInfoFromSessionStr) : null;
                   // 若没有用户信息，保存现在的地址，并跳转到登录页
-      if (YST?.CLIENT_ID && !isLoginPage && !userInfo && !userInfoFromSession) {
+      if (!import.meta.env.DEV && YST?.CLIENT_ID && !isLoginPage && !userInfo && !userInfoFromSession) {
         handleLogin();
       }
       setAuthInfo(() => ({

@@ -2,10 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { sourcePathPlugin } from './scripts/sourcePathPlugin.mjs';
-import { authorizationMockPlugin } from './devtools/authorizationMock';
 
 export default defineConfig({
-  plugins: [sourcePathPlugin({ rootDir: __dirname }), react(), authorizationMockPlugin()],
+  plugins: [sourcePathPlugin({ rootDir: __dirname }), react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -25,11 +24,11 @@ export default defineConfig({
     postcss: './postcss.config.js',
   },
   server: {
-    port: 3000,
+    port: 3001,
     proxy: {
       '/api': {
         changeOrigin: true,
-        target: 'http://99.17.200.156:8081',
+        target: 'http://localhost:8080',
       },
     },
   },

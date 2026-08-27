@@ -3,7 +3,7 @@ import { AUTHORIZATION_KEY } from '@/constants';
 export type DataType = string | number | Object;
 export type ReqFulfilledType = (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig;
 export type ResFulfilledType = (response: AxiosResponse) => AxiosResponse['data'];
-export type ResRejectedType = (error: AxiosError<{ message: string }>) => void;
+export type ResRejectedType = (error: AxiosError<{ message: string }>) => Promise<never>;
 
 // 请求体处理
 const defaultReqFulfilled: ReqFulfilledType = (config) => {
@@ -35,6 +35,7 @@ const defaultResRejected: ResRejectedType = async (error) => {
     // todo 替换为真正的跳转方法
     console.log('接下来要跳转的登录地址: ', errResponseBody?.loginUri)
   }
+  return Promise.reject(error);
 };
 
 const defaultConfig: AxiosRequestConfig = {
@@ -67,8 +68,8 @@ class Service {
     return this.axios.get(url, config) as unknown as Promise<T>;
   }
 
-  post<T>(url: string, data?: DataType, config: AxiosRequestConfig = {}): Promise<{ data: T }> {
-    return this.axios.post(url, data, config);
+  post<T>(url: string, data?: DataType, config: AxiosRequestConfig = {}): Promise<T> {
+    return this.axios.post(url, data, config) as unknown as Promise<T>;
   }
 
   put<T>(url: string, data?: DataType, config: AxiosRequestConfig = {}): Promise<T> {

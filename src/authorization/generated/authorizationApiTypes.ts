@@ -4,32 +4,31 @@
  */
 
 export interface paths {
-    "/api/authorization/status": {
+    "/api/authorization/mock-login": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 获取权限运行时就绪状态 */
-        get: operations["getAuthorizationStatus"];
+        get?: never;
         put?: never;
-        post?: never;
+        /** @description 从固定 mock 成员中选择身份，签发 HS256 JWT 并通过 HttpOnly Cookie 返回，仅用于本地联调。 */
+        post: operations["mockAuthorizationLogin"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/authorization/me/effective-permissions": {
+    "/api/authorization/me/resources": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 获取当前认证成员的有效资源 */
-        get: operations["getMyEffectivePermissions"];
+        get: operations["getMyResources"];
         put?: never;
         post?: never;
         delete?: never;
@@ -45,7 +44,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 查询只读资源目录 */
         get: operations["listAuthorizationResources"];
         put?: never;
         post?: never;
@@ -62,7 +60,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 查询单个只读资源 */
         get: operations["getAuthorizationResource"];
         put?: never;
         post?: never;
@@ -79,10 +76,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 分页查询角色 */
         get: operations["listAuthorizationRoles"];
         put?: never;
-        /** 创建普通角色 */
         post: operations["createAuthorizationRole"];
         delete?: never;
         options?: never;
@@ -97,12 +92,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 查询角色详情 */
         get: operations["getAuthorizationRole"];
-        /** 修改角色名称或说明 */
         put: operations["updateAuthorizationRole"];
         post?: never;
-        /** 逻辑删除普通角色 */
         delete: operations["deleteAuthorizationRole"];
         options?: never;
         head?: never;
@@ -117,7 +109,6 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** 启用或停用角色 */
         put: operations["setAuthorizationRoleStatus"];
         post?: never;
         delete?: never;
@@ -133,10 +124,24 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 查询角色资源关系 */
         get: operations["getAuthorizationRoleResources"];
-        /** 全量替换角色资源关系 */
-        put: operations["replaceAuthorizationRoleResources"];
+        put: operations["setAuthorizationRoleResources"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authorization/roles/{roleId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAuthorizationRoleMembers"];
+        put: operations["bindAuthorizationRoleMembers"];
         post?: never;
         delete?: never;
         options?: never;
@@ -151,77 +156,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 分页查询本地授权成员 */
+        /** @description 当前返回固定 mock 成员数据，仅用于列表联调。 */
         get: operations["listAuthorizationMembers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/authorization/members/{subjectId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 查询本地授权成员 */
-        get: operations["getAuthorizationMember"];
-        put?: never;
-        post?: never;
-        /** 删除本地授权记录 */
-        delete: operations["deleteAuthorizationMember"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/authorization/members/{subjectId}/roles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** 全量替换成员角色关系 */
-        put: operations["replaceAuthorizationMemberRoles"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/authorization/members/{subjectId}/effective-permissions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 查询成员有效资源 */
-        get: operations["getAuthorizationMemberEffectivePermissions"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/authorization/audit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 分页查询授权审计 */
-        get: operations["listAuthorizationAudit"];
         put?: never;
         post?: never;
         delete?: never;
@@ -234,171 +170,115 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        AuthorizationStatus: {
-            ready: boolean;
-            /** @enum {string} */
-            contractVersion: "authorization-api.v1";
-            /** @enum {string|null} */
-            reason: "runtime_not_built" | "database_not_initialized" | "resource_manifest_mismatch" | null;
+        ErrorResponse: components["schemas"]["ResponseEnvelope"] & {
+            /** @example XCD1B01 */
+            returnCode?: string;
+            /** @example 权限资源不存在 */
+            errorMsg?: string;
+            body?: Record<string, never> | null;
         };
-        ErrorResponse: {
-            /** @enum {string} */
-            code: "unauthenticated" | "forbidden" | "authorization_not_ready" | "authorization_revision_conflict" | "last_administrator_required" | "not_found";
-            message: string;
-            /** Format: int64 */
-            currentRevision?: number;
-            details?: {
-                [key: string]: unknown;
-            };
+        ResponseEnvelope: {
+            /** @example SUC0000 */
+            returnCode: string;
+            errorMsg?: string | null;
+        };
+        EmptyEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: Record<string, never> | null;
+        };
+        MemberEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["Member"];
+        };
+        MemberResourcesEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["MemberResources"];
+        };
+        PermissionResourceEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["PermissionResource"];
+        };
+        ResourceListEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["ResourceList"];
+        };
+        RoleEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["Role"];
+        };
+        RoleListEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["RoleList"];
+        };
+        RoleResourcesEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["RoleResources"];
+        };
+        RoleMembersEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["RoleMembers"];
+        };
+        MemberListEnvelope: components["schemas"]["ResponseEnvelope"] & {
+            body?: components["schemas"]["MemberList"];
         };
         PermissionResource: {
             resourceKey: string;
+            name: string;
+            description?: string | null;
             /** @enum {string} */
             origin: "system" | "business";
             /** @enum {string} */
-            type: "system" | "page" | "operation" | "data";
-            name: string;
-            description: string;
-            semanticDefinition: string;
-            targetResourceRef?: string;
-            policyKey?: string;
-        };
-        ResourceList: {
-            items: components["schemas"]["PermissionResource"][];
-            total: number;
-            page: number;
-            pageSize: number;
-            /** Format: int64 */
-            revision: number;
+            type: "system" | "page" | "operation";
+            targetResourceRef?: string | null;
         };
         Role: {
-            /** Format: uuid */
             roleId: string;
             name: string;
             description?: string | null;
-            active: boolean;
-            deleted: boolean;
-            readonly isSystemRole: boolean;
-            readonly isInitialAdminRole: boolean;
-            resourceKeys: string[];
+            enable: boolean;
+            readonly system: boolean;
         };
-        RoleList: {
-            items: components["schemas"]["Role"][];
-            total: number;
-            page: number;
-            pageSize: number;
-            /** Format: int64 */
-            revision: number;
+        Member: {
+            memberId: string;
+            memberName: string;
+        };
+        MockLoginRequest: {
+            /** @example member-001 */
+            memberId: string;
+        };
+        MemberResources: {
+            memberId: string;
+            resourceKeys: string[];
         };
         RoleUpsertRequest: {
             name: string;
             description?: string | null;
-            /** Format: int64 */
-            expectedRevision: number;
         };
         RoleStatusRequest: {
-            active: boolean;
-            /** Format: int64 */
-            expectedRevision: number;
-        };
-        RoleResourcesRequest: {
-            resourceKeys: string[];
-            /** Format: int64 */
-            expectedRevision: number;
+            enable: boolean;
         };
         RoleResources: {
-            /** Format: uuid */
             roleId: string;
             resourceKeys: string[];
+        };
+        RoleMembers: {
+            roleId: string;
+            members: components["schemas"]["Member"][];
+        };
+        ResourceList: components["schemas"]["PageBase"] & {
+            list: components["schemas"]["PermissionResource"][];
+        };
+        RoleList: components["schemas"]["PageBase"] & {
+            list: components["schemas"]["Role"][];
+        };
+        MemberList: components["schemas"]["PageBase"] & {
+            list: components["schemas"]["Member"][];
+        };
+        PageBase: {
             /** Format: int64 */
-            revision: number;
-        };
-        RoleWriteResult: {
-            role: components["schemas"]["Role"];
-            /** Format: int64 */
-            revision: number;
-        };
-        Member: {
-            subjectId: string;
-            displayName?: string | null;
-            /** @enum {string} */
-            source: "seed" | "preconfigured" | "jit";
-            roleIds: string[];
-        };
-        MemberList: {
-            items: components["schemas"]["Member"][];
             total: number;
-            page: number;
+            list: unknown[];
+            /** Format: int64 */
+            current: number;
+            /** Format: int64 */
             pageSize: number;
             /** Format: int64 */
-            revision: number;
-        };
-        MemberRolesRequest: {
-            roleIds: string[];
-            displayName?: string | null;
-            /** Format: int64 */
-            expectedRevision: number;
-        };
-        EffectivePermissions: {
-            subjectId: string;
-            resourceKeys: string[];
-            /** Format: int64 */
-            revision: number;
-        };
-        RevisionRequest: {
-            /** Format: int64 */
-            expectedRevision: number;
-        };
-        RevisionResult: {
-            /** Format: int64 */
-            revision: number;
-        };
-        AuditEntry: {
-            /** Format: uuid */
-            id: string;
-            actorSubjectId: string;
-            action: string;
-            target: string;
-            before?: {
-                [key: string]: unknown;
-            } | null;
-            after?: {
-                [key: string]: unknown;
-            } | null;
-            /** Format: int64 */
-            revision: number;
-            /** Format: date-time */
-            occurredAt: string;
-        };
-        AuditList: {
-            items: components["schemas"]["AuditEntry"][];
-            total: number;
-            page: number;
-            pageSize: number;
-            /** Format: int64 */
-            revision: number;
+            totalPage: number;
         };
     };
     responses: {
-        /** @description 未认证 */
-        Unauthenticated: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description 无系统管理资源 */
-        Forbidden: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description 资源不存在 */
+        /** @description 不存在 */
         NotFound: {
             headers: {
                 [name: string]: unknown;
@@ -407,8 +287,8 @@ export interface components {
                 "application/json": components["schemas"]["ErrorResponse"];
             };
         };
-        /** @description 权限运行时未就绪 */
-        NotReady: {
+        /** @description 请求校验失败 */
+        ValidationFailed: {
             headers: {
                 [name: string]: unknown;
             };
@@ -416,8 +296,8 @@ export interface components {
                 "application/json": components["schemas"]["ErrorResponse"];
             };
         };
-        /** @description 授权版本冲突或防锁死拒绝 */
-        RevisionConflict: {
+        /** @description 业务冲突 */
+        Conflict: {
             headers: {
                 [name: string]: unknown;
             };
@@ -429,10 +309,8 @@ export interface components {
     parameters: {
         ResourceKey: string;
         RoleId: string;
-        SubjectId: string;
-        Page: number;
+        Current: number;
         PageSize: number;
-        IncludeDeleted: boolean;
     };
     requestBodies: never;
     headers: never;
@@ -440,27 +318,33 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    getAuthorizationStatus: {
+    mockAuthorizationLogin: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MockLoginRequest"];
+            };
+        };
         responses: {
-            /** @description 状态 */
+            /** @description 模拟登录成功 */
             200: {
                 headers: {
+                    /** @description 包含 JWT 的 HttpOnly Cookie */
+                    "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AuthorizationStatus"];
+                    "application/json": components["schemas"]["MemberEnvelope"];
                 };
             };
         };
     };
-    getMyEffectivePermissions: {
+    getMyResources: {
         parameters: {
             query?: never;
             header?: never;
@@ -469,40 +353,38 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 有效权限 */
+            /** @description 当前成员资源点 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["EffectivePermissions"];
+                    "application/json": components["schemas"]["MemberResourcesEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            503: components["responses"]["NotReady"];
         };
     };
     listAuthorizationResources: {
         parameters: {
-            query?: never;
+            query?: {
+                current?: components["parameters"]["Current"];
+                pageSize?: components["parameters"]["PageSize"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description 资源列表 */
+            /** @description 只读资源目录 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ResourceList"];
+                    "application/json": components["schemas"]["ResourceListEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            503: components["responses"]["NotReady"];
         };
     };
     getAuthorizationResource: {
@@ -516,27 +398,22 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 资源 */
+            /** @description 资源详情 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PermissionResource"];
+                    "application/json": components["schemas"]["PermissionResourceEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            503: components["responses"]["NotReady"];
         };
     };
     listAuthorizationRoles: {
         parameters: {
             query?: {
-                page?: components["parameters"]["Page"];
+                current?: components["parameters"]["Current"];
                 pageSize?: components["parameters"]["PageSize"];
-                includeDeleted?: components["parameters"]["IncludeDeleted"];
             };
             header?: never;
             path?: never;
@@ -550,12 +427,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RoleList"];
+                    "application/json": components["schemas"]["RoleListEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            503: components["responses"]["NotReady"];
         };
     };
     createAuthorizationRole: {
@@ -571,19 +445,15 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 已创建角色 */
-            201: {
+            /** @description 已创建 */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RoleWriteResult"];
+                    "application/json": components["schemas"]["RoleEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            409: components["responses"]["RevisionConflict"];
-            503: components["responses"]["NotReady"];
         };
     };
     getAuthorizationRole: {
@@ -597,19 +467,15 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 角色 */
+            /** @description 角色详情 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Role"];
+                    "application/json": components["schemas"]["RoleEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            503: components["responses"]["NotReady"];
         };
     };
     updateAuthorizationRole: {
@@ -627,20 +493,15 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 已更新角色 */
+            /** @description 已更新 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RoleWriteResult"];
+                    "application/json": components["schemas"]["RoleEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            409: components["responses"]["RevisionConflict"];
-            503: components["responses"]["NotReady"];
         };
     };
     deleteAuthorizationRole: {
@@ -652,11 +513,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RevisionRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description 已删除 */
             200: {
@@ -664,14 +521,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RevisionResult"];
+                    "application/json": components["schemas"]["EmptyEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            409: components["responses"]["RevisionConflict"];
-            503: components["responses"]["NotReady"];
         };
     };
     setAuthorizationRoleStatus: {
@@ -689,20 +541,15 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 已更新状态 */
+            /** @description 已更新 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RoleWriteResult"];
+                    "application/json": components["schemas"]["RoleEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            409: components["responses"]["RevisionConflict"];
-            503: components["responses"]["NotReady"];
         };
     };
     getAuthorizationRoleResources: {
@@ -722,16 +569,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RoleResources"];
+                    "application/json": components["schemas"]["RoleResourcesEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            503: components["responses"]["NotReady"];
         };
     };
-    replaceAuthorizationRoleResources: {
+    setAuthorizationRoleResources: {
         parameters: {
             query?: never;
             header?: never;
@@ -742,30 +585,73 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RoleResourcesRequest"];
+                "application/json": string[];
             };
         };
         responses: {
-            /** @description 已替换资源关系 */
+            /** @description 已添加 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RoleResources"];
+                    "application/json": components["schemas"]["RoleResourcesEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            409: components["responses"]["RevisionConflict"];
-            503: components["responses"]["NotReady"];
+        };
+    };
+    getAuthorizationRoleMembers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roleId: components["parameters"]["RoleId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 角色成员 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleMembersEnvelope"];
+                };
+            };
+        };
+    };
+    bindAuthorizationRoleMembers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roleId: components["parameters"]["RoleId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Member"][];
+            };
+        };
+        responses: {
+            /** @description 已绑定 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleMembersEnvelope"];
+                };
+            };
         };
     };
     listAuthorizationMembers: {
         parameters: {
             query?: {
-                page?: components["parameters"]["Page"];
+                current?: components["parameters"]["Current"];
                 pageSize?: components["parameters"]["PageSize"];
             };
             header?: never;
@@ -780,151 +666,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MemberList"];
+                    "application/json": components["schemas"]["MemberListEnvelope"];
                 };
             };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            503: components["responses"]["NotReady"];
-        };
-    };
-    getAuthorizationMember: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                subjectId: components["parameters"]["SubjectId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成员 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Member"];
-                };
-            };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            503: components["responses"]["NotReady"];
-        };
-    };
-    deleteAuthorizationMember: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                subjectId: components["parameters"]["SubjectId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RevisionRequest"];
-            };
-        };
-        responses: {
-            /** @description 已删除本地授权记录 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RevisionResult"];
-                };
-            };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            409: components["responses"]["RevisionConflict"];
-            503: components["responses"]["NotReady"];
-        };
-    };
-    replaceAuthorizationMemberRoles: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                subjectId: components["parameters"]["SubjectId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MemberRolesRequest"];
-            };
-        };
-        responses: {
-            /** @description 已替换成员角色 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Member"];
-                };
-            };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            409: components["responses"]["RevisionConflict"];
-            503: components["responses"]["NotReady"];
-        };
-    };
-    getAuthorizationMemberEffectivePermissions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                subjectId: components["parameters"]["SubjectId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 有效权限 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["EffectivePermissions"];
-                };
-            };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            503: components["responses"]["NotReady"];
-        };
-    };
-    listAuthorizationAudit: {
-        parameters: {
-            query?: {
-                page?: components["parameters"]["Page"];
-                pageSize?: components["parameters"]["PageSize"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 审计列表 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AuditList"];
-                };
-            };
-            401: components["responses"]["Unauthenticated"];
-            403: components["responses"]["Forbidden"];
-            503: components["responses"]["NotReady"];
         };
     };
 }

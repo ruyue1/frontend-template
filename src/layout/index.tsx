@@ -12,8 +12,8 @@ import AppIcon from "./components/AppIcon";
 import { transformBizMenuForProLayout } from "@/utils/layout";
 import {
   AUTHORIZATION_RESOURCE_KEY,
-  usePermission,
-} from "@/authorization/PermissionProvider";
+  useAuth,
+} from "@/authorization/AuthProvider";
 
 const HEADER_FOOTER_SETTING: Partial<ProSettings> = {
   headerRender: undefined, // 启用Header时渲染默认的Header，可以手动复写为自定义Header
@@ -29,13 +29,6 @@ const DEFAULT_LAYOUT_SETTING: Partial<ProSettings> = {
   navTheme: "light" as any,
 };
 
-const ANONYMOUS_USER_ID = "anonymous";
-const ANONYMOUS_USER_INFO = {
-  userName: "匿名用户",
-  userId: ANONYMOUS_USER_ID,
-  userNo: ANONYMOUS_USER_ID,
-};
-
 export default () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,8 +42,8 @@ export default () => {
     };
   }, []);
 
-  const { authInfo } = useContext(GlobalContext);
-  const { can } = usePermission();
+  const { userInfo: contextUserInfo } = useContext(GlobalContext);
+  const { can } = useAuth();
   const routes = useMemo(() => {
     return {
       path: "/page",
@@ -88,17 +81,14 @@ export default () => {
   }, []);
 
   const userInfoFromSessionStr = sessionStorage.getItem(USER_INFO_KEY);
-  let userInfo: IUserInfo;
+  let storedUserInfo: IUserInfo | null = null;
 
   try {
     if (userInfoFromSessionStr) {
-      userInfo = JSON.parse(userInfoFromSessionStr);
-    } else {
-      userInfo = ANONYMOUS_USER_INFO;
+      storedUserInfo = JSON.parse(userInfoFromSessionStr);
     }
-  } catch {
-    userInfo = ANONYMOUS_USER_INFO;
-  }
+  } catch {}
+  const userInfo = contextUserInfo || storedUserInfo;
 
   return (
     <ProConfigProvider>
@@ -118,7 +108,7 @@ export default () => {
           pathname: pathname,
         }}
         avatarProps={
-          authInfo
+          userInfo
             ? {
                 src: userInfo?.avatar ?? "",
                 title: userInfo?.userName ?? "用户",

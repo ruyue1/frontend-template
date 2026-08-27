@@ -1,14 +1,14 @@
-import { Suspense, useMemo } from "react";
-import { RouteObject, useRoutes, Navigate } from "react-router-dom";
-import { BIZ_MENUS } from "@/constants/menus";
-import { PAGE_ROUTE } from "@/constants/routes";
-import Layout from "@/layout";
-import Login from "@/pages/Login";
-import Logout from "@/pages/Logout";
-import { transformMenuToRoute } from "@/utils/route";
-import AuthorizationManagementPage from "@/pages/System/AuthorizationManagementPage";
-import { PermissionGuard } from "@/authorization/PermissionGuard";
-import { AUTHORIZATION_RESOURCE_KEY } from "@/authorization/PermissionProvider";
+import { Suspense, useMemo } from 'react';
+import { RouteObject, useRoutes, Navigate } from 'react-router-dom';
+import { BIZ_MENUS } from '@/constants/menus';
+import { PAGE_ROUTE } from '@/constants/routes';
+import Layout from '@/layout';
+import Login from '@/pages/Login';
+import Logout from '@/pages/Logout';
+import { transformMenuToRoute } from '@/utils/route';
+import AuthorizationManagementPage from '@/pages/System/AuthorizationManagementPage';
+import { RouteGuard } from '@/authorization/RouteGuard';
+import { AUTHORIZATION_RESOURCE_KEY } from '@/authorization/AuthProvider';
 
 const generateRouter = (routes: RouteObject[]) => {
   return routes.map((item) => {
@@ -27,7 +27,7 @@ const generateRouter = (routes: RouteObject[]) => {
  */
 const routeList: RouteObject[] = [
   {
-    path: "/",
+    path: '/',
     children: [
       {
         path: PAGE_ROUTE,
@@ -35,23 +35,23 @@ const routeList: RouteObject[] = [
         children: [...transformMenuToRoute(BIZ_MENUS)],
       },
       {
-        path: "/roles",
+        path: '/roles',
         element: <Layout />,
         children: [
           {
             index: true,
             element: (
-              <PermissionGuard resourceKey={AUTHORIZATION_RESOURCE_KEY}>
+              <RouteGuard resourceKey={AUTHORIZATION_RESOURCE_KEY}>
                 <AuthorizationManagementPage />
-              </PermissionGuard>
+              </RouteGuard>
             ),
           },
         ],
       },
-      { path: "/login", element: <Login /> },
-      { path: "/logout", element: <Logout /> },
-      { index: true, element: <Navigate to={PAGE_ROUTE} replace /> },
-      { path: "*", element: <div>未找到页面</div> },
+      { path: '/login', element: <Login /> },
+      { path: '/logout', element: <Logout /> },
+      { index: true, element: <Navigate to='/login' replace /> },
+      { path: '*', element: <div>未找到页面</div> },
     ],
   },
 ];

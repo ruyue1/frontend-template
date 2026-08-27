@@ -3,6 +3,16 @@ import useGuard from '@/hooks/useGuard';
 import type { IUserInfo, IAuthInfo } from '@/typings';
 import { IGlobalContext } from '@/typings/index';
 import { createContext } from 'react';
+import { USER_INFO_KEY } from '@/constants';
+
+const getStoredUserInfo = (): IUserInfo | null => {
+  try {
+    const stored = sessionStorage.getItem(USER_INFO_KEY);
+    return stored ? JSON.parse(stored) as IUserInfo : null;
+  } catch {
+    return null;
+  }
+};
 
 /**
  * 定义provider
@@ -15,7 +25,7 @@ export const GlobalContext = createContext<IGlobalContext>({
 });
 
 export const GlobalContextProvider = ({children}: PropsWithChildren) => {
-  const [userInfo, setUserInfo] = useState<IUserInfo | null>(null);
+  const [userInfo, setUserInfo] = useState<IUserInfo | null>(getStoredUserInfo);
   const [authInfo, setAuthInfo] = useState<IAuthInfo | null>(null);
   
   const GlobalContextValue = useMemo(
