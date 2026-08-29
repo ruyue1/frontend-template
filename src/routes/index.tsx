@@ -32,12 +32,13 @@ const routeList: RouteObject[] = [
   {
     path: '/',
     children: [
-      // XCODEAGENT_BUSINESS_ROUTES_START
-      // XCODEAGENT_BUSINESS_ROUTES_END
       {
         path: PAGE_ROUTE,
         element: <Layout />,
-        children: [...transformMenuToRoute(BIZ_MENUS)],
+        children: [
+          // XCODEAGENT_BUSINESS_ROUTES_START
+          // XCODEAGENT_BUSINESS_ROUTES_END
+        ],
       },
       {
         path: '/roles',
