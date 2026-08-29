@@ -10,6 +10,9 @@ import AuthorizationManagementPage from '@/pages/System/AuthorizationManagementP
 import { RouteGuard } from '@/authorization/RouteGuard';
 import { RESOURCES } from '@/authorization';
 
+// XCODEAGENT_BUSINESS_ROUTE_IMPORTS_START
+// XCODEAGENT_BUSINESS_ROUTE_IMPORTS_END
+
 const generateRouter = (routes: RouteObject[]) => {
   return routes.map((item) => {
     if (item.element) {
@@ -29,6 +32,8 @@ const routeList: RouteObject[] = [
   {
     path: '/',
     children: [
+      // XCODEAGENT_BUSINESS_ROUTES_START
+      // XCODEAGENT_BUSINESS_ROUTES_END
       {
         path: PAGE_ROUTE,
         element: <Layout />,
@@ -41,7 +46,9 @@ const routeList: RouteObject[] = [
           {
             index: true,
             element: (
-              <RouteGuard resourceKey={RESOURCES.SYSTEM.AUTHORIZATION_MANAGEMENT}>
+              <RouteGuard
+                resourceKey={RESOURCES.SYSTEM.AUTHORIZATION_MANAGEMENT}
+              >
                 <AuthorizationManagementPage />
               </RouteGuard>
             ),
