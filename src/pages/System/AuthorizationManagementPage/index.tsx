@@ -8,8 +8,10 @@ import {
   listAuthorizationResources, listAuthorizationRoles, setAuthorizationRoleResources,
   setAuthorizationRoleStatus, updateAuthorizationRole,
 } from '@/apis/authorization';
-import type { Member, PermissionResource, Role } from '@/authorization/types';
-import { Permission, RESOURCES, usePermission } from '@/authorization';
+import type { Member, PermissionResource, Role } from '@/typings/authorization';
+import { Permission } from '@/components/authorization/Permission';
+import { RESOURCES } from '@/constants/resources';
+import { usePermission } from '@/hooks/usePermission';
 
 const errorMessage = (error: unknown) => (error as { message?: string })?.message || '请求失败，请稍后重试。';
 

@@ -43,7 +43,7 @@ pnpm quality
 pnpm prettier
 ```
 
-
+# 项目目录
 ```
 ├── .cmbjs.env.js              # CMB JS 环境配置文件
 ├── .cmbQuality.config.js      # 代码质量配置
@@ -92,13 +92,13 @@ pnpm prettier
     │       └── index.tsx
     │
     ├── constants/             # 全局常量配置
-    │   ├── common.ts          # 通用常量（前缀类名等）
-    │   ├── index.ts           # 常量统一导出（PAGE_ROUTE 等）
-    │   ├── routes.ts          # 路由常量（菜单列表 MENU_LIST）
+    │   ├── index.ts           # 通用常量
+    │   ├── routes.tsx         # 页面路由、权限与菜单配置
     │   └── yst.ts             # YST 相关常量
     │
     ├── hooks/                 # 自定义 React Hooks
-    │   └── useGuard.ts        # 权限守卫 Hook（鉴权逻辑）
+    │   ├── useGuard.ts        # 登录守卫 Hook
+    │   └── usePageMenus.ts    # 页面权限菜单 Hook
     │
     ├── layout/                # 布局组件
     │   ├── index.tsx          # 主布局组件（LeftRightOne：左右布局）
@@ -134,9 +134,6 @@ pnpm prettier
     │               └── index.tsx
     │
     ├── pages/                 # 页面组件
-    │   ├── index.tsx          # 主内容入口（MainContent，渲染布局 + 菜单）
-    │   ├── DefaultPage/       # 默认页面
-    │   │   └── index.tsx
     │   ├── Login/             # 登录页面
     │   │   └── index.tsx
     │   └── Logout/            # 登出页面
@@ -168,8 +165,8 @@ pnpm prettier
 
 ```
 /                          → GlobalContextProvider（全局上下文）
-├── /page                  → MainContent（主内容 + 布局）
-│   ├── /page/default      → DefaultPage（默认页面）
+├── /page                  → 首个有权限的菜单页面
+├── /authorization-management → 权限管理（需系统权限管理资源）
 ├── /login                 → Login（登录页）
 ├── /logout                → Logout（登出页）
 └── *                      → 404 页面

@@ -1,50 +1,33 @@
-import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-import type { Route } from '@typings/workbench';
+import { RouteGuard } from '@/components/authorization/RouteGuard';
+import type { Route } from '@/typings/workbench';
+import type { PageRouteDefinition } from '@/typings/routes';
 
-// 使用 Vite 的 import.meta.glob 预扫描所有页面（编译时静态分析）
-const pageModules = import.meta.glob('@/pages/**/index.tsx') as Record<string, () => Promise<{ default: React.ComponentType<any> }>>;
-const systemPageModules = import.meta.glob('@/pages/System/**/index.tsx') as Record<string, () => Promise<{ default: React.ComponentType<any> }>>;
-
-function resolvePageModule(menuKey: string, isSystemMenu?: boolean) {
-  const modules = isSystemMenu ? systemPageModules : pageModules;
-  const normalizedKey = menuKey.replace(/^\//, '').replace(/\/$/, '');
-  const importPath = isSystemMenu
-    ? `/src/pages/System/${normalizedKey}/index.tsx`
-    : `/src/pages/${normalizedKey}/index.tsx`;
-  return modules[importPath];
+export function createProtectedRoutes(items: PageRouteDefinition[]): RouteObject[] {
+  return items.map((item) => ({
+    path: item.path,
+    element: <RouteGuard resourceKey={item.resourceKey}>{item.element}</RouteGuard>,
+  }));
 }
 
-export function transformMenuToRoute(menus: Route[], isSystemMenu?: boolean): RouteObject[] {
-  if (!Array.isArray(menus) || menus.length === 0) return [];
+export function createAuthorizedMenus(
+  hasPermission: (resourceKey: string) => boolean,
+  items: PageRouteDefinition[],
+): Route[] {
+  return items.flatMap((item) => {
+    if (!item.menu || !hasPermission(item.resourceKey)) return [];
+    return [{
+      key: item.menu.key,
+      name: item.menu.label,
+      icon: item.menu.icon,
+      path: item.path,
+    }];
+  });
+}
 
-  const result: RouteObject[] = [];
-
-  for (const menu of menus) {
-    if (!menu?.path && menu?.children) {
-      const childRoutes = transformMenuToRoute(menu.children, isSystemMenu);
-      result.push(...childRoutes);
-      continue;
-    }
-
-    const route: RouteObject = {
-      path: menu.path,
-    };
-
-    if (menu?.key) {
-      const loader = resolvePageModule(menu.key, isSystemMenu);
-      if (loader) {
-        const Page = lazy(loader);
-        route.element = <Page />;
-      }
-    }
-
-    if (menu?.children && menu?.children.length > 0) {
-      route.children = transformMenuToRoute(menu.children, isSystemMenu);
-    }
-
-    result.push(route);
-  }
-
-  return result;
+export function findFirstAuthorizedMenuPath(
+  hasPermission: (resourceKey: string) => boolean,
+  items: PageRouteDefinition[],
+): string | undefined {
+  return items.find((item) => item.menu && hasPermission(item.resourceKey))?.path;
 }

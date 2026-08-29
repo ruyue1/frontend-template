@@ -5,7 +5,7 @@ import { Alert, Button, Card, Form, Input, Typography } from 'antd';
 import { mockAuthorizationLogin } from '@/apis/authorization';
 import { USER_INFO_KEY } from '@/constants';
 import { GlobalContext } from '@/providers';
-import { useAuth } from '@/authorization/AuthProvider';
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function Login() {
   const navigate = useNavigate();

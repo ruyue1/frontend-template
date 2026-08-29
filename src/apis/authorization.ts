@@ -1,5 +1,5 @@
 import service from '@/apis/service';
-import type { EmptyEnvelope, Member, MemberEnvelope, MemberList, MemberListEnvelope, MemberResources, MemberResourcesEnvelope, MockLoginRequest, PermissionResource, PermissionResourceEnvelope, ResourceList, ResourceListEnvelope, Role, RoleEnvelope, RoleList, RoleListEnvelope, RoleMembers, RoleMembersEnvelope, RoleResources, RoleResourcesEnvelope, RoleStatusRequest, RoleUpsertRequest, ResponseEnvelope } from '@/authorization/types';
+import type { EmptyEnvelope, Member, MemberEnvelope, MemberList, MemberListEnvelope, MemberResources, MemberResourcesEnvelope, MockLoginRequest, PermissionResource, PermissionResourceEnvelope, ResourceList, ResourceListEnvelope, Role, RoleEnvelope, RoleList, RoleListEnvelope, RoleMembers, RoleMembersEnvelope, RoleResources, RoleResourcesEnvelope, RoleStatusRequest, RoleUpsertRequest, ResponseEnvelope } from '@/typings/authorization';
 
 export type PageParams = { current?: number; pageSize?: number };
 export class AuthorizationApiError extends Error { constructor(public readonly returnCode: string, message?: string) { super(message || '授权服务请求失败'); } }

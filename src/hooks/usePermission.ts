@@ -1,12 +1,9 @@
 import { useCallback } from 'react';
-import { useAuth } from './AuthProvider';
+import { useAuth } from '@/providers/AuthProvider';
 
 type ResourceKeys = readonly string[];
 
-/**
- * 提供业务层的权限判断能力。
- * 权限未加载完成或运行时异常时，所有判断均按无权限处理。
- */
+/** 提供业务层的权限判断能力。 */
 export function usePermission() {
   const { permissions, state } = useAuth();
 

@@ -5,7 +5,7 @@ import { StyleProvider } from '@ant-design/cssinjs';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import GlobalContextProvider from '@/providers';
 import { Routes } from '@/routes';
-import { AuthProvider } from '@/authorization/AuthProvider';
+import { AuthProvider } from '@/providers/AuthProvider';
 /**
  * 应用入口文件
  */

@@ -1,16 +1,16 @@
-import React, { useContext, useState, useMemo, useCallback } from "react";
+import React, { useContext, useMemo, useCallback } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom"; // 引入路由
 import type { ProSettings } from "@ant-design/pro-components";
 import { ProLayout, ProConfigProvider } from "@ant-design/pro-components";
+import { Spin } from 'antd';
 import { USER_INFO_KEY } from "@/constants";
-import { BIZ_MENUS } from "@/constants/menus";
 import { LayoutTypeEnum } from "@typings/workbench";
 import type { IUserInfo } from "@/typings";
 import { GlobalContext } from "@/providers";
 import { openNewPage, renderIcon } from "@utils/workbench";
 import AppIcon from "./components/AppIcon";
-import { transformBizMenuForProLayout } from "@/utils/layout";
-import { RESOURCES, usePermission } from "@/authorization";
+import { AuthStateView } from '@/components/authorization/RouteGuard';
+import { usePageMenus } from '@/hooks/usePageMenus';
 
 const HEADER_FOOTER_SETTING: Partial<ProSettings> = {
   headerRender: undefined, // 启用Header时渲染默认的Header，可以手动复写为自定义Header
@@ -30,8 +30,6 @@ export default () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [pathname, setPathname] = useState(location.pathname);
-
   const settings = useMemo(() => {
     return {
       ...DEFAULT_LAYOUT_SETTING,
@@ -40,26 +38,15 @@ export default () => {
   }, []);
 
   const { userInfo: contextUserInfo } = useContext(GlobalContext);
-  const { hasPermission } = usePermission();
+  const { state, menuRoutes } = usePageMenus();
   const routes = useMemo(() => {
     return {
-      path: "/page",
+      path: "/",
       name: "",
       flatMenu: true, // 当前路由不在菜单中显示，直接展示子菜单
-      routes: [
-        ...transformBizMenuForProLayout(BIZ_MENUS),
-        ...(hasPermission(RESOURCES.SYSTEM.AUTHORIZATION_MANAGEMENT)
-          ? [
-              {
-                path: "/roles",
-                name: "权限管理",
-                icon: "SafetyCertificateOutlined",
-              },
-            ]
-          : []),
-      ],
+      routes: menuRoutes,
     };
-  }, [hasPermission]);
+  }, [menuRoutes]);
 
   const handleMenuClick = useCallback((item: any, isMobile?: boolean) => {
     if (item?.path) {
@@ -71,7 +58,6 @@ export default () => {
           openNewPage(item.path, item.target);
         }
       } else {
-        setPathname(item.path);
         navigate(item.path);
       }
     }
@@ -102,7 +88,7 @@ export default () => {
         }
         route={{ path: "/", routes: [routes] }}
         location={{
-          pathname: pathname,
+          pathname: location.pathname,
         }}
         avatarProps={
           userInfo
@@ -131,6 +117,12 @@ export default () => {
             <span>{item.name}</span>
           </div>
         )}
+        menuRender={(_, defaultDom) => {
+          if (state === 'ready') return defaultDom;
+          return state === 'loading'
+            ? <div className="authorization-state"><Spin tip="正在加载权限…" /></div>
+            : <AuthStateView state={state} />;
+        }}
         {...settings}
       >
         <Outlet />

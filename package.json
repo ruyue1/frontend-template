@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "jest --config jest.config.cjs --runInBand",
     "test:source-path": "node scripts/test-source-path-plugin.mjs",
-    "authorization:types": "openapi-typescript ../springboot-template/docs/auth/contracts/authorization-api.v2.yaml -o src/authorization/generated/authorizationApiTypes.ts"
+    "authorization:types": "openapi-typescript ../springboot-template/docs/auth/contracts/authorization-api.v2.yaml -o src/typings/generated/authorizationApiTypes.ts"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.21.1",
