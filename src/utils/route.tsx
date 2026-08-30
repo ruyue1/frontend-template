@@ -6,7 +6,9 @@ import type { PageRouteDefinition } from '@/typings/routes';
 export function createProtectedRoutes(items: PageRouteDefinition[]): RouteObject[] {
   return items.map((item) => ({
     path: item.path,
-    element: <RouteGuard resourceKey={item.resourceKey}>{item.element}</RouteGuard>,
+    element: item.resourceKey
+      ? <RouteGuard resourceKey={item.resourceKey}>{item.element}</RouteGuard>
+      : item.element,
   }));
 }
 
@@ -15,7 +17,7 @@ export function createAuthorizedMenus(
   items: PageRouteDefinition[],
 ): Route[] {
   return items.flatMap((item) => {
-    if (!item.menu || !hasPermission(item.resourceKey)) return [];
+    if (!item.menu || (item.resourceKey && !hasPermission(item.resourceKey))) return [];
     return [{
       key: item.menu.key,
       name: item.menu.label,
@@ -29,5 +31,5 @@ export function findFirstAuthorizedMenuPath(
   hasPermission: (resourceKey: string) => boolean,
   items: PageRouteDefinition[],
 ): string | undefined {
-  return items.find((item) => item.menu && hasPermission(item.resourceKey))?.path;
+  return items.find((item) => item.menu && (!item.resourceKey || hasPermission(item.resourceKey)))?.path;
 }

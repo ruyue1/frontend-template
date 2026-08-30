@@ -9,11 +9,12 @@ export type PageMenu = {
 
 /**
  * 每个页面只能在此配置中注册一次。
- * 不设置 menu 的页面仍会受 resourceKey 保护，但不会显示在导航菜单中。
+ * 未设置 resourceKey 的页面不参与前端业务权限控制。
+ * 未设置 menu 的页面不会显示在导航菜单中。
  */
 export type PageRouteDefinition = {
   path: string;
-  resourceKey: string;
+  resourceKey?: string;
   element: ReactNode;
   menu?: PageMenu;
 };

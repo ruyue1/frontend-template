@@ -10,10 +10,10 @@ import { createProtectedRoutes } from '@/utils/route';
 function PageEntryRedirect() {
   const { state, firstAccessiblePath } = usePageMenus();
 
+  if (firstAccessiblePath) return <Navigate to={firstAccessiblePath} replace />;
   if (state !== 'ready') return <AuthStateView state={state} />;
-  if (!firstAccessiblePath) return <div className="authorization-state">暂无可访问页面</div>;
 
-  return <Navigate to={firstAccessiblePath} replace />;
+  return <div className="authorization-state">暂无可访问页面</div>;
 }
 
 /**

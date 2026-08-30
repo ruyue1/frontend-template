@@ -9,12 +9,12 @@ export function usePageMenus() {
   const { state } = useAuth();
   const { hasPermission } = usePermission();
   const menuRoutes = useMemo(
-    () => state === 'ready' ? createAuthorizedMenus(hasPermission, PAGE_ROUTES) : [],
-    [hasPermission, state],
+    () => createAuthorizedMenus(hasPermission, PAGE_ROUTES),
+    [hasPermission],
   );
   const firstAccessiblePath = useMemo(
-    () => state === 'ready' ? findFirstAuthorizedMenuPath(hasPermission, PAGE_ROUTES) : undefined,
-    [hasPermission, state],
+    () => findFirstAuthorizedMenuPath(hasPermission, PAGE_ROUTES),
+    [hasPermission],
   );
 
   return { state, menuRoutes, firstAccessiblePath };
