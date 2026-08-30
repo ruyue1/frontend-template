@@ -1,8 +1,9 @@
 import AuthorizationManagementPage from '@/pages/System/AuthorizationManagementPage';
 import type { PageRouteDefinition } from '@/typings/routes';
+import { RESOURCES } from '@/constants/resources';
 
 // XCODEAGENT_BUSINESS_ROUTE_IMPORTS_START
-import { RESOURCES } from '@/constants/resources';
+
 // XCODEAGENT_BUSINESS_ROUTE_IMPORTS_END
 
 /**
