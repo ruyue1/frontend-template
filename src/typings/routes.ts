@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { Route } from '@/typings/workbench';
 
 /** 页面路由与菜单的统一配置类型。 */
 export type PageMenu = {
@@ -8,13 +8,14 @@ export type PageMenu = {
 };
 
 /**
- * 每个页面只能在此配置中注册一次。
- * 未设置 resourceKey 的页面不参与前端业务权限控制。
- * 未设置 menu 的页面不会显示在导航菜单中。
+ * 根数组中的页面节点即为扁平菜单；children 用于目录层级。
  */
-export type PageRouteDefinition = {
-  path: string;
+export type PageRouteDefinition = Omit<Route, 'children' | 'key'> & {
+  children?: PageRouteDefinition[];
+  /** XcodeAgent 业务页标识；用于确定页面目录和路由地址。 */
+  pageId?: string;
+  /** 平台系统页的显式模块目录，不适用 pageId 业务页转换规则。 */
+  modulePath?: string;
   resourceKey?: string;
-  element: ReactNode;
   menu?: PageMenu;
 };

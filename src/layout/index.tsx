@@ -4,6 +4,7 @@ import type { ProSettings } from "@ant-design/pro-components";
 import { ProLayout, ProConfigProvider } from "@ant-design/pro-components";
 import { Spin } from 'antd';
 import { USER_INFO_KEY } from "@/constants";
+import { PAGE_ROUTE } from '@/constants/routes';
 import { LayoutTypeEnum } from "@typings/workbench";
 import type { IUserInfo } from "@/typings";
 import { GlobalContext } from "@/providers";
@@ -41,7 +42,7 @@ export default () => {
   const { state, menuRoutes } = usePageMenus();
   const routes = useMemo(() => {
     return {
-      path: "/",
+      path: `/${PAGE_ROUTE}`,
       name: "",
       flatMenu: true, // 当前路由不在菜单中显示，直接展示子菜单
       routes: menuRoutes,

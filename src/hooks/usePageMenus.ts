@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { PAGE_ROUTES } from '@/constants/routes';
+import { PAGE_ROUTE, PAGE_ROUTES } from '@/constants/routes';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePermission } from '@/hooks/usePermission';
 import { createAuthorizedMenus, findFirstAuthorizedMenuPath } from '@/utils/route';
@@ -9,11 +9,11 @@ export function usePageMenus() {
   const { state } = useAuth();
   const { hasPermission } = usePermission();
   const menuRoutes = useMemo(
-    () => createAuthorizedMenus(hasPermission, PAGE_ROUTES),
+    () => createAuthorizedMenus(hasPermission, PAGE_ROUTES, PAGE_ROUTE),
     [hasPermission],
   );
   const firstAccessiblePath = useMemo(
-    () => findFirstAuthorizedMenuPath(hasPermission, PAGE_ROUTES),
+    () => findFirstAuthorizedMenuPath(hasPermission, PAGE_ROUTES, PAGE_ROUTE),
     [hasPermission],
   );
 

@@ -1,10 +1,8 @@
-import AuthorizationManagementPage from '@/pages/System/AuthorizationManagementPage';
 import type { PageRouteDefinition } from '@/typings/routes';
 import { RESOURCES } from '@/constants/resources';
 
-// XCODEAGENT_BUSINESS_ROUTE_IMPORTS_START
-
-// XCODEAGENT_BUSINESS_ROUTE_IMPORTS_END
+/** 业务路由根路径；业务页面 URL 始终以 /page 开头。 */
+export const PAGE_ROUTE = 'page';
 
 /**
  * 页面路由、路由权限与菜单入口的唯一配置来源。
@@ -14,14 +12,14 @@ import { RESOURCES } from '@/constants/resources';
  */
 export const PAGE_ROUTES: PageRouteDefinition[] = [
   {
-    path: '/authorization-management',
+    path: 'authorization-management',
+    modulePath: 'System/AuthorizationManagementPage',
     resourceKey: RESOURCES.SYSTEM.AUTHORIZATION_MANAGEMENT,
     menu: {
       key: 'authorization-management',
       label: '权限管理',
       icon: 'SafetyCertificateOutlined',
     },
-    element: <AuthorizationManagementPage />,
   },
   // XCODEAGENT_BUSINESS_ROUTES_START
   // XCODEAGENT_BUSINESS_ROUTES_END

@@ -3,9 +3,9 @@ import Layout from '@/layout';
 import Login from '@/pages/Login';
 import Logout from '@/pages/Logout';
 import { AuthStateView } from '@/components/authorization/RouteGuard';
-import { PAGE_ROUTES } from '@/constants/routes';
+import { PAGE_ROUTE, PAGE_ROUTES } from '@/constants/routes';
 import { usePageMenus } from '@/hooks/usePageMenus';
-import { createProtectedRoutes } from '@/utils/route';
+import { createProtectedRoutes } from '@/utils/protectedRoutes';
 
 function PageEntryRedirect() {
   const { state, firstAccessiblePath } = usePageMenus();
@@ -24,9 +24,10 @@ const routeList: RouteObject[] = [
     path: '/',
     children: [
       {
+        path: PAGE_ROUTE,
         element: <Layout />,
         children: [
-          { path: '/page', element: <PageEntryRedirect /> },
+          { index: true, element: <PageEntryRedirect /> },
           ...createProtectedRoutes(PAGE_ROUTES),
         ],
       },
