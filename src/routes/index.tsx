@@ -1,12 +1,23 @@
+import { Suspense, useMemo } from 'react';
 import { RouteObject, useRoutes, Navigate } from 'react-router-dom';
-import { PAGE_ROUTE, PAGE_ROUTES } from '@/constants/routes';
+import { BIZ_MENUS } from '@/constants/menus';
+import { PAGE_ROUTE } from '@/constants/routes';
 import Layout from '@/layout';
 import Login from '@/pages/Login';
 import Logout from '@/pages/Logout';
-import { findFirstPagePath } from '@/utils/route';
-import { createPageRoutes } from '@/utils/pageRoutes';
+import { transformMenuToRoute } from '@/utils/route';
 
-const firstPagePath = findFirstPagePath(PAGE_ROUTES, PAGE_ROUTE);
+const generateRouter = (routes: RouteObject[]) => {
+  return routes.map((item) => {
+    if (item.element) {
+      item.element = <Suspense>{item.element}</Suspense>;
+    }
+    if (item.children?.length) {
+      item.children = generateRouter(item.children);
+    }
+    return item;
+  });
+};
 
 /**
  * 注册页面路由
@@ -19,8 +30,7 @@ const routeList: RouteObject[] = [
         path: PAGE_ROUTE,
         element: <Layout />,
         children: [
-          { index: true, element: firstPagePath ? <Navigate to={firstPagePath} replace /> : <div>暂无可访问页面</div> },
-          ...createPageRoutes(PAGE_ROUTES),
+          ...transformMenuToRoute(BIZ_MENUS)
         ],
       },
       { path: '/login', element: <Login /> },
@@ -32,7 +42,8 @@ const routeList: RouteObject[] = [
 ];
 
 const Routes = () => {
-  return useRoutes(routeList);
+  const routes = useMemo(() => generateRouter(routeList), []);
+  return useRoutes(routes);
 };
 
 export { Routes, routeList };
