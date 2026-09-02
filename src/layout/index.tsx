@@ -1,9 +1,9 @@
-import React, { useContext, useState, useMemo, useCallback } from 'react';
+import React, { useContext, useMemo, useCallback } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'; // 引入路由
 import type { ProSettings } from '@ant-design/pro-components';
 import { ProLayout, ProConfigProvider } from '@ant-design/pro-components';
 import { USER_INFO_KEY } from '@/constants';
-import { BIZ_MENUS } from '@/constants/menus';
+import { PAGE_ROUTE, PAGE_ROUTES } from '@/constants/routes';
 import { LayoutTypeEnum } from '@typings/workbench';
 import type { IUserInfo } from '@/typings';
 import { GlobalContext } from '@/providers';
@@ -12,7 +12,7 @@ import {
   renderIcon
 } from '@utils/workbench';
 import AppIcon from './components/AppIcon';
-import { transformBizMenuForProLayout } from '@/utils/layout';
+import { createLayoutMenus } from '@/utils/route';
 
 const HEADER_FOOTER_SETTING: Partial<ProSettings> = {
   headerRender: undefined, // 启用Header时渲染默认的Header，可以手动复写为自定义Header
@@ -35,8 +35,6 @@ export default () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [pathname, setPathname] = useState(location.pathname);
-
   const settings = useMemo(() => {
     return {
       ...DEFAULT_LAYOUT_SETTING,
@@ -47,10 +45,10 @@ export default () => {
   const routes = useMemo(() => {
     return (
       {
-        path: '/page',
+        path: `/${PAGE_ROUTE}`,
         name: '',
         flatMenu: true, // 当前路由不在菜单中显示，直接展示子菜单
-        routes: [...transformBizMenuForProLayout(BIZ_MENUS)]
+        routes: createLayoutMenus(PAGE_ROUTES, PAGE_ROUTE),
       }
     );
   }, [])
@@ -65,7 +63,6 @@ export default () => {
           openNewPage(item.path, item.target);
         }
       } else {
-        setPathname(item.path);
         navigate(item.path);
       }
     }
@@ -94,7 +91,7 @@ export default () => {
         logo={<AppIcon icon={'https://s3gw.cmbchina.com/lt5230-images-prd/TFQ1NC4wMQ==/059a63b2804b41e987952290540b6f77'} appName={'测试应用4'} />}
         route={{ path: '/', routes: [routes] }}
         location={{
-          pathname: pathname,
+          pathname: location.pathname,
         }}
         avatarProps={authInfo ? {
           src: userInfo?.avatar ?? '',

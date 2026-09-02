@@ -1,50 +1,52 @@
-import { lazy } from 'react';
-import type { RouteObject } from 'react-router-dom';
 import type { Route } from '@typings/workbench';
+import type { PageRouteDefinition } from '@/typings/routes';
 
-// 使用 Vite 的 import.meta.glob 预扫描所有页面（编译时静态分析）
-const pageModules = import.meta.glob('@/pages/**/index.tsx') as Record<string, () => Promise<{ default: React.ComponentType<any> }>>;
-const systemPageModules = import.meta.glob('@/pages/System/**/index.tsx') as Record<string, () => Promise<{ default: React.ComponentType<any> }>>;
-
-function resolvePageModule(menuKey: string, isSystemMenu?: boolean) {
-  const modules = isSystemMenu ? systemPageModules : pageModules;
-  const normalizedKey = menuKey.replace(/^\//, '').replace(/\/$/, '');
-  const importPath = isSystemMenu
-    ? `/src/pages/System/${normalizedKey}/index.tsx`
-    : `/src/pages/${normalizedKey}/index.tsx`;
-  return modules[importPath];
+function normalizePathSegment(path?: string) {
+  return path?.replace(/^\/+|\/+$/g, '') ?? '';
 }
 
-export function transformMenuToRoute(menus: Route[], isSystemMenu?: boolean): RouteObject[] {
-  if (!Array.isArray(menus) || menus.length === 0) return [];
+/** 从统一业务配置生成 ProLayout 菜单，并将内部链接解析为 /page/... 绝对路径。 */
+export function createLayoutMenus(items: PageRouteDefinition[], rootPath: string): Route[] {
+  const normalizedRootPath = normalizePathSegment(rootPath);
 
-  const result: RouteObject[] = [];
-
-  for (const menu of menus) {
-    if (!menu?.path && menu?.children) {
-      const childRoutes = transformMenuToRoute(menu.children, isSystemMenu);
-      result.push(...childRoutes);
-      continue;
-    }
-
-    const route: RouteObject = {
-      path: menu.path,
+  const walk = (nodes: PageRouteDefinition[], parentPathSegments: string[]): Route[] => nodes.map((item) => {
+    const normalizedPath = normalizePathSegment(item.path);
+    const nextParentPathSegments = normalizedPath && !item.isUrl
+      ? [...parentPathSegments, normalizedPath]
+      : parentPathSegments;
+    const children = item.children?.length ? walk(item.children, nextParentPathSegments) : undefined;
+    const nextItem: Route = {
+      ...item,
+      key: item.pageKey ?? item.key,
+      path: item.isUrl || !normalizedPath
+        ? item.path
+        : `/${[normalizedRootPath, ...nextParentPathSegments].join('/')}`,
+      children,
     };
+    delete (nextItem as PageRouteDefinition).pageKey;
+    delete (nextItem as PageRouteDefinition).resourceKey;
+    return nextItem;
+  });
 
-    if (menu?.key) {
-      const loader = resolvePageModule(menu.key, isSystemMenu);
-      if (loader) {
-        const Page = lazy(loader);
-        route.element = <Page />;
+  return Array.isArray(items) ? walk(items, []) : [];
+}
+
+/** 返回第一个可导航的业务页面，用于 /page 入口重定向。 */
+export function findFirstPagePath(items: PageRouteDefinition[], rootPath: string): string | undefined {
+  const normalizedRootPath = normalizePathSegment(rootPath);
+  const find = (nodes: PageRouteDefinition[], parentPathSegments: string[]): string | undefined => {
+    for (const node of nodes) {
+      const normalizedPath = normalizePathSegment(node.path);
+      const nextParentPathSegments = normalizedPath && !node.isUrl
+        ? [...parentPathSegments, normalizedPath]
+        : parentPathSegments;
+      if (node.pageKey && normalizedPath && !node.isUrl) {
+        return `/${[normalizedRootPath, ...nextParentPathSegments].join('/')}`;
       }
+      const childPath = node.children ? find(node.children, nextParentPathSegments) : undefined;
+      if (childPath) return childPath;
     }
-
-    if (menu?.children && menu?.children.length > 0) {
-      route.children = transformMenuToRoute(menu.children, isSystemMenu);
-    }
-
-    result.push(route);
-  }
-
-  return result;
+    return undefined;
+  };
+  return find(items, []);
 }
